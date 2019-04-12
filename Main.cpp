@@ -37,4 +37,4 @@ int main() {
 	char *func_arr[20];
 	function(func_arr);
 }
-/*---------------*/
+/*-----*/
