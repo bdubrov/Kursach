@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <cstdio>
 using namespace std;
 class stack {
 	double *stck;
@@ -54,11 +55,6 @@ double stack::pop() {
 	tos--;
 	return stck[tos];
 }
-void stack::show() {
-	for (int i = 0; i < tos; i++) {
-		cout << stck[i] << " ";
-	}	
-}
 void DUP(stack &s) {
 	double tmp = s.pop();
 	s.push(tmp);
@@ -101,37 +97,24 @@ void COS(stack &s) {
 	double x = cos(s.pop());
 	s.push(x);
 }
-void choise(char *func, stack &s) {
+void choice(char *func, stack &s) {
 	if ( strstr(func, "DUP") ) {
-		cout << "DUP ";	//test
 		DUP(s);
-		cout << endl;	//test
 	} else if ( strstr(func, "MUL") ) {
-		cout << "MUL ";	//test
 		MUL(s);
-		cout << endl;	//test
 	} else if ( strstr(func, "SWAP") ) {
-		cout << "SWAP ";	//test
 		SWAP(s);
-		cout << endl;	//test
 	} else if ( strstr(func, "ADD") ) {
-		cout << "ADD ";	//test
 		ADD(s);
-		cout << endl;	//test
 	} else if ( strstr(func, "OVER")) {
-		cout << "OVER ";	//test
 		OVER(s);
-		cout << endl;	//test
 	} else if ( strstr(func, "SIN")) {
-		cout << "SIN ";	//test
 		SIN(s);
-		cout << endl;	//test
 	} else if ( strstr(func, "COS")) {
-		cout << "COS ";	//test
 		COS(s);
-		cout << endl;	//test
 	} else {
 		cout << "INCORECT ENTER!";
+		exit(-1);
 	}
 }
 void function(char *str, stack &s) {
@@ -139,15 +122,24 @@ void function(char *str, stack &s) {
 	func = new char[20];
 	for (int i = 0, k = 0; i <= (int)strlen(str); i++, k++) {
 		if (str[i] == ' ' || str[i] == '\0') {
-			choise(func, s);
+			choice(func, s);
 			k = 0;
 		} else {
 			func[k] = str[i];
 		}
 	}
 }
-int main() {
- 	cout<<
+void print(char *arr) {
+	char ch;
+	int n = 0; 
+	while ((ch = getchar())!= '\n') {
+		arr = (char *)realloc(arr, sizeof(arr)+1);
+		arr[n] = ch;
+		n++;
+	}
+}
+void instruction() {
+	cout<<
  	"|-------------------------------------------------------------------|\n"<<
  	"|Опервция|                        Назначение                        |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
@@ -164,19 +156,20 @@ int main() {
  	"|  SIN   |   Заменить верхний обЪект строки на его синус (3.14->0)  |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
 	"|  COS   |  Заменить верхний обЪект строки на его косинус (-3.14->0)|\n"<<
-	"|-------------------------------------------------------------------|\n";
-	char func_arr[100] = "DUP SIN SWAP COS ADD";
-	stack s(M_PI);
+	"|-------------------------------------------------------------------|\n"<<
+	"     Введите команды через пробел (нажмите ENTER для выполнения)     \n";
+}
+int main() {
+	char *func_arr;
+	func_arr = (char *)malloc(sizeof(char));
+	instruction();
+	print(func_arr);
+	for (int i = -5; i <= 5; i++){
+		stack s(i);
 		function(func_arr, s);
-	s.show();
-	// for (int i = 0; i < 5; i++){	//test
-	// 	stack s(i);
-	// 	s.push(i+1);
-	// 	s.show();
-	// 	function(func_arr, s);
-	// 	s.show();
-	// 	cout << endl;
-	// }
+		cout << "x=" << i << " y=" << s.pop();
+		cout << endl;
+	}
 	return 0;
 }
 /* ---------------------------------------------------------------------[<]-
