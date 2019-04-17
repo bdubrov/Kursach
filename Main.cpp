@@ -21,7 +21,7 @@ public:
 	stack(double x);
 	~stack();
 	void push(double x);
-	double pop();
+	bool pop(double &x);
 	void show();
 };
 stack::stack(double x) {
@@ -44,10 +44,11 @@ void stack::push(double x) {
 	stck[tos] = x;
 	tos++;
 }
-double stack::pop() {
+bool stack::pop(double &x) {
 	if(tos == 0){
-		cout << "Недостаточно елементов для выполнения операции";
-		exit(-1);
+		cout << "\nОШИБКА: недостаточно елементов для выполнения операции\n";
+		cout << "Логически неверная запись функции\n\n";
+		return false;
 	}
 	double d = stck[tos-1];
 	tos--;
@@ -55,84 +56,116 @@ double stack::pop() {
 	if (!stck) {
 		cout << "Allocation Error!";
 	}
-	return d;
+	x = d;
+	return true;
 }
-void DUP(stack &s) {
-	double tmp = s.pop();
+bool DUP(stack &s) {
+	double tmp;
+	if (!s.pop(tmp)) {
+		return false;
+	}
 	s.push(tmp);
 	s.push(tmp);
+	return true;
 }
-void MUL(stack &s) {
+bool MUL(stack &s) {
 	double x1, x2, mult;
-	x1 = s.pop();
-	x2 = s.pop();
+	if (!s.pop(x1) || !s.pop(x2)) {
+		return false;
+	}
 	mult = x1 * x2;
 	s.push(mult);
+	return true;
 }
-void SWAP(stack &s) {
+bool SWAP(stack &s) {
 	double x1, x2;
-	x1 = s.pop();
-	x2 = s.pop();
+	if (!s.pop(x1) || !s.pop(x2)) {
+		return false;
+	}
 	s.push(x1);
 	s.push(x2);
+	return true;
 }
-void ADD(stack &s) {
+bool ADD(stack &s) {
 	double x1, x2, add;
-	x1 = s.pop();
-	x2 = s.pop();
+	if (!s.pop(x1) || !s.pop(x2)) {
+		return false;
+	}
 	add = x1 + x2;
 	s.push(add);
+	return true;
 }
-void OVER(stack &s) {
+bool OVER(stack &s) {
 	double x1, x2;
-	x1 = s.pop();
-	x2 = s.pop();
+	if (!s.pop(x1) || !s.pop(x2)) {
+		return false;
+	}
 	s.push(x2);
 	s.push(x1);
 	s.push(x2);
+	return true;
 }
-void SIN(stack &s) {
-	double x = sin(s.pop());
-	s.push(x);
-}
-void COS(stack &s) {
-	double x = cos(s.pop());
-	s.push(x);
-}
-void choice(char *func, stack &s) {
-	if ( strstr(func, "DUP") ) {
-		DUP(s);
-	} else if ( strstr(func, "MUL") ) {
-		MUL(s);
-	} else if ( strstr(func, "SWAP") ) {
-		SWAP(s);
-	} else if ( strstr(func, "ADD") ) {
-		ADD(s);
-	} else if ( strstr(func, "OVER")) {
-		OVER(s);
-	} else if ( strstr(func, "SIN")) {
-		SIN(s);
-	} else if ( strstr(func, "COS")) {
-		COS(s);
-	} else {
-		cout << "INCORECT ENTER!";
-		exit(-1);
+bool SIN(stack &s) {
+	double x;
+	if (!s.pop(x)) {
+		return false;
 	}
+	x = sin(x);
+	s.push(x);
+	return true;
 }
-void function(char *str, stack &s) {
+bool COS(stack &s) {
+	double x;
+	if (!s.pop(x)) {
+		return false;
+	}
+	x = cos(x);
+	s.push(x);
+	return true;
+}
+bool choice(char *func, stack &s) {
+	bool tmp = true; 
+	if ( strstr(func, "DUP") ) {
+		tmp = DUP(s);
+	} else if ( strstr(func, "MUL") ) {
+		tmp = MUL(s);
+	} else if ( strstr(func, "SWAP") ) {
+		tmp = SWAP(s);
+	} else if ( strstr(func, "ADD") ) {
+		tmp = ADD(s);
+	} else if ( strstr(func, "OVER")) {
+		tmp = OVER(s);
+	} else if ( strstr(func, "SIN")) {
+		tmp = SIN(s);
+	} else if ( strstr(func, "COS")) {
+		tmp = COS(s);
+	} else if ( strstr(func, "EXIT")) {
+		exit(0);
+	} else {
+		cout << "\nОШИБКА: некоректный ввод!\n";
+		cout << "Используйте только поданые ниже операции\n";
+		tmp = false;
+	}
+	return tmp;
+}
+bool function(char *str, stack &s) {
 	char *func;
 	func = new char[20];
 	for (int i = 0, k = 0; i <= (int)strlen(str); i++) {
 		if (str[i] == ' ' || str[i] == '\0') {
-			choice(func, s);
+			if(!choice(func, s)) {
+				return false;
+			}
+			strcpy(func, "");
 			k = 0;
 		} else {
 			func[k] = str[i];
 			k++;
 		}
 	}
+	return true;
 }
-void print(char *arr) {
+void read(char *arr) {
 	char ch;
 	int n = 0; 
 	while ((ch = cin.get())!= '\n') {
@@ -160,26 +193,38 @@ void instruction() {
  	"|-------------------------------------------------------------------|\n"<<
 	"|  COS   |  Заменить верхний обЪект строки на его косинус (-3.14->0)|\n"<<
 	"|-------------------------------------------------------------------|\n"<<
+	"|  EXIT  |                   Выйти из программы                     |\n"<<
+	"|-------------------------------------------------------------------|\n"<<
 	"     Введите команды через пробел (нажмите ENTER для выполнения)     \n";
 }
 int main() {
 	char *func_arr;
+	bool t = true;
 	func_arr = (char *)malloc(sizeof(char));
 	// filename = (char *)malloc(sizeof(char));
-	instruction();
-	print(func_arr);
 	// fstream file("A.csv");
 	// if ( !file ) {
 	// 	cout << "Can not open file:" << endl;
 	// 	exit(1);
 	// } 
 	// file << "x , y" << endl;
-	for (int i = -5; i <= 5; i++){
-		stack s(i);
-		function(func_arr, s);
-		// file << i << " , " << s.pop() << endl;
-		cout << "x=" << i << " y=" << s.pop();
-		cout << endl;
+	while(t) {
+		instruction();
+		read(func_arr);
+		for (int i = -5; i <= 5; i++){
+			stack s(i);
+			if(!function(func_arr, s)) {
+				t = true;
+				break;
+			} else {
+				t = false;
+				double y;
+				s.pop(y);
+				// file << i << " , " << s.pop() << endl;
+				cout << "x=" << i << " y=" << y;
+				cout << endl;
+			}
+		}
 	}
 	//file.close();
 	//ShellExecuteA(0, "open", "Excel.exe", "A.csv", NULL, SW_SHOW);
