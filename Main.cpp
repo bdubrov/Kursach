@@ -11,7 +11,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
-#include <cstdio>
+#include <fstream>
+#include <windows.h>
 using namespace std;
 class stack {
 	double *stck;
@@ -45,15 +46,16 @@ void stack::push(double x) {
 }
 double stack::pop() {
 	if(tos == 0){
-		cout << "Stack is empty";
-		return 0;
+		cout << "Недостаточно елементов для выполнения операции";
+		exit(-1);
 	}
-	stck = (double *)realloc(stck, tos - 1);
+	double d = stck[tos-1];
+	tos--;
+	stck = (double *)realloc(stck, tos);
 	if (!stck) {
 		cout << "Allocation Error!";
 	}
-	tos--;
-	return stck[tos];
+	return d;
 }
 void DUP(stack &s) {
 	double tmp = s.pop();
@@ -120,19 +122,20 @@ void choice(char *func, stack &s) {
 void function(char *str, stack &s) {
 	char *func;
 	func = new char[20];
-	for (int i = 0, k = 0; i <= (int)strlen(str); i++, k++) {
+	for (int i = 0, k = 0; i <= (int)strlen(str); i++) {
 		if (str[i] == ' ' || str[i] == '\0') {
 			choice(func, s);
 			k = 0;
 		} else {
 			func[k] = str[i];
+			k++;
 		}
 	}
 }
 void print(char *arr) {
 	char ch;
 	int n = 0; 
-	while ((ch = getchar())!= '\n') {
+	while ((ch = cin.get())!= '\n') {
 		arr = (char *)realloc(arr, sizeof(arr)+1);
 		arr[n] = ch;
 		n++;
@@ -162,14 +165,24 @@ void instruction() {
 int main() {
 	char *func_arr;
 	func_arr = (char *)malloc(sizeof(char));
+	// filename = (char *)malloc(sizeof(char));
 	instruction();
 	print(func_arr);
+	// fstream file("A.csv");
+	// if ( !file ) {
+	// 	cout << "Can not open file:" << endl;
+	// 	exit(1);
+	// } 
+	// file << "x , y" << endl;
 	for (int i = -5; i <= 5; i++){
 		stack s(i);
 		function(func_arr, s);
+		// file << i << " , " << s.pop() << endl;
 		cout << "x=" << i << " y=" << s.pop();
 		cout << endl;
 	}
+	//file.close();
+	//ShellExecuteA(0, "open", "Excel.exe", "A.csv", NULL, SW_SHOW);
 	return 0;
 }
 /* ---------------------------------------------------------------------[<]-
