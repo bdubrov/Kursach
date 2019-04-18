@@ -150,9 +150,8 @@ bool choice(char *func, stack &s) {
 	return tmp;
 }
 bool function(char *str, stack &s) {
-	char *func;
-	func = new char[20];
-	strcpy(func, " ");
+	char func[20] = " ";
+	// strcpy(func, " ");
 	for (int i = 0, k = 0; i <= (int)strlen(str); i++) {
 		if (str[i] == ' ' || str[i] == '\0') {
 			if(!choice(func, s)) {
@@ -167,14 +166,15 @@ bool function(char *str, stack &s) {
 	}
 	return true;
 }
-void read(char *arr) {
+char *read(char *arr) {
 	char ch;
 	int n = 0; 
 	while ((ch = cin.get())!= '\n') {
-		arr = (char *)realloc(arr, sizeof(arr)+1);
+		arr = (char *)realloc(arr, (strlen(arr)+1)*sizeof(char));
 		arr[n] = ch;
 		n++;
 	}
+	return arr;
 }
 void instruction() {
 	cout<<
@@ -200,13 +200,18 @@ void instruction() {
 	"     Введите команды через пробел (нажмите ENTER для выполнения)     \n";
 }
 int main() {
-	char *func_arr, *filename;
+	char *func_arr, *filename, ch, c;
+	int k = 0, n = 0;
 	double x1, x2, e;
 	bool t = true;
 	func_arr = (char *)malloc(sizeof(char));
 	filename = (char *)malloc(sizeof(char));
 	cout << "Введите название файла для записи(в формате .csv): ";
-	read(filename);
+	while ((c = cin.get())!= '\n') {
+		filename = (char *)realloc(filename, (strlen(filename)+1)*sizeof(char));
+		filename[k] = c;
+		k++;
+	}
 	ofstream file(filename);
 	if ( !file ) {
 		cout << "Can not open file: \"" << filename <<"\"" << endl;
@@ -224,11 +229,15 @@ int main() {
 		}
 		cout << "Введите точность построения: ";
 		cin >> e;
-		cin.ignore(1,'\n');
+		cin.ignore(256,'\n');
 	file << "x;y" << endl;
 	while(t) {
 		instruction();
-		read(func_arr);
+		while ((ch = cin.get())!= '\n') {
+			func_arr = (char *)realloc(func_arr, (strlen(func_arr)+1)*sizeof(char));
+			func_arr[n] = ch;
+			n++;
+		}
 		for (int i = x1/e; i <= x2/e; i++){
 			double x = i*e;
 			stack s(x);
@@ -249,6 +258,3 @@ int main() {
 	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	return 0;
 }
-/* ---------------------------------------------------------------------[<]-
-Test1 output:
----------------------------------------------------------------------[>]-*/
