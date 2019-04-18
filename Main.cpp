@@ -13,6 +13,7 @@
 #include <cmath>
 #include <fstream>
 #include <windows.h>
+#include <cstdio>
 using namespace std;
 class stack {
 	double *stck;
@@ -151,6 +152,7 @@ bool choice(char *func, stack &s) {
 bool function(char *str, stack &s) {
 	char *func;
 	func = new char[20];
+	strcpy(func, " ");
 	for (int i = 0, k = 0; i <= (int)strlen(str); i++) {
 		if (str[i] == ' ' || str[i] == '\0') {
 			if(!choice(func, s)) {
@@ -177,7 +179,7 @@ void read(char *arr) {
 void instruction() {
 	cout<<
  	"|-------------------------------------------------------------------|\n"<<
- 	"|Опервция|                        Назначение                        |\n"<<
+ 	"|Операция|                        Назначение                        |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
  	"|  DUP   |        Копировать верхний объект стека(A->AA)            |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
@@ -198,21 +200,38 @@ void instruction() {
 	"     Введите команды через пробел (нажмите ENTER для выполнения)     \n";
 }
 int main() {
-	char *func_arr;
+	char *func_arr, *filename;
+	double x1, x2, e;
 	bool t = true;
 	func_arr = (char *)malloc(sizeof(char));
-	// filename = (char *)malloc(sizeof(char));
-	// fstream file("A.csv");
-	// if ( !file ) {
-	// 	cout << "Can not open file:" << endl;
-	// 	exit(1);
-	// } 
-	// file << "x , y" << endl;
+	filename = (char *)malloc(sizeof(char));
+	cout << "Введите название файла для записи(в формате .csv): ";
+	read(filename);
+	ofstream file(filename);
+	if ( !file ) {
+		cout << "Can not open file: \"" << filename <<"\"" << endl;
+		exit(1);
+	} 
+	cout << "Введите интервал построения графика\n";
+		cout << "от: ";
+		cin >> x1;
+		cout << "до: ";
+		cin >> x2;
+		if (x2 < x1) {
+			double temp = x1;
+			x1 = x2;
+			x2 = temp;
+		}
+		cout << "Введите точность построения: ";
+		cin >> e;
+		cin.ignore(1,'\n');
+	file << "x;y" << endl;
 	while(t) {
 		instruction();
 		read(func_arr);
-		for (int i = -5; i <= 5; i++){
-			stack s(i);
+		for (int i = x1/e; i <= x2/e; i++){
+			double x = i*e;
+			stack s(x);
 			if(!function(func_arr, s)) {
 				t = true;
 				break;
@@ -220,14 +239,14 @@ int main() {
 				t = false;
 				double y;
 				s.pop(y);
-				// file << i << " , " << s.pop() << endl;
-				cout << "x=" << i << " y=" << y;
+				file << x << ";" << y << endl;
+				cout << "x=" << x << " y=" << y;
 				cout << endl;
 			}
 		}
 	}
-	//file.close();
-	//ShellExecuteA(0, "open", "Excel.exe", "A.csv", NULL, SW_SHOW);
+	file.close();
+	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOW);
 	return 0;
 }
 /* ---------------------------------------------------------------------[<]-
