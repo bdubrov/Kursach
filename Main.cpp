@@ -246,7 +246,7 @@ int main() {
 		}
 	}
 	file.close();
-	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOW);
+	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	return 0;
 }
 /* ---------------------------------------------------------------------[<]-
