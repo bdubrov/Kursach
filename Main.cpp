@@ -38,7 +38,7 @@ stack::~stack() {
 	free(stck);
 }
 void stack::push(double x) {
-	stck = (double *)realloc(stck, tos + 1);
+	stck = (double *)realloc(stck, (tos + 1)*sizeof(double));
 	if (!stck) {
 		cout << "Allocation Error!";
 	}
@@ -53,7 +53,7 @@ bool stack::pop(double &x) {
 	}
 	double d = stck[tos-1];
 	tos--;
-	stck = (double *)realloc(stck, tos);
+	stck = (double *)realloc(stck, tos*sizeof(double));
 	if (!stck) {
 		cout << "Allocation Error!";
 	}
