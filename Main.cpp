@@ -146,6 +146,7 @@ bool choice(char *func, stack &s) {
 		cout << "\nОШИБКА: некоректный ввод!\n";
 		cout << "Используйте только поданые ниже операции\n";
 		tmp = false;
+		cin.ignore(100,'\n');
 	}
 	return tmp;
 }
@@ -216,20 +217,38 @@ int main() {
 	if ( !file ) {
 		cout << "Can not open file: \"" << filename <<"\"" << endl;
 		exit(1);
-	} 
+	}
+	while(true) {
 	cout << "Введите интервал построения графика\n";
 		cout << "от: ";
-		cin >> x1;
+		if (!(cin >> x1)) {
+			cout << "\nПожалуйста вводите только цифры.\n";
+			cin.clear();
+    		cin.ignore(100,'\n');
+    		continue;
+    	}
 		cout << "до: ";
-		cin >> x2;
+		if (!(cin >> x2)) {
+			cout << "\nПожалуйста вводите только цифры.\n";
+			cin.clear();
+    		cin.ignore(100,'\n');
+    		continue;
+    	}
 		if (x2 < x1) {
 			double temp = x1;
 			x1 = x2;
 			x2 = temp;
 		}
 		cout << "Введите точность построения: ";
-		cin >> e;
-		cin.ignore(256,'\n');
+		if (!(cin >> e)) {
+			cout << "\nПожалуйста вводите только цифры.\n";
+			cin.clear();
+    		cin.ignore(100,'\n');
+    		continue;
+    	}
+    	cin.ignore(100,'\n');
+    	break;
+	}
 	file << "x;y" << endl;
 	while(t) {
 		instruction();
@@ -258,3 +277,4 @@ int main() {
 	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	return 0;
 }
+c 
