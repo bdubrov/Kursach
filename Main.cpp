@@ -146,19 +146,17 @@ bool choice(char *func, stack &s) {
 		cout << "\nОШИБКА: некоректный ввод!\n";
 		cout << "Используйте только поданые ниже операции\n";
 		tmp = false;
-		cin.ignore(100,'\n');
 	}
 	return tmp;
 }
 bool function(char *str, stack &s) {
-	char func[20] = " ";
-	// strcpy(func, " ");
+	char func[20] = "*";
 	for (int i = 0, k = 0; i <= (int)strlen(str); i++) {
 		if (str[i] == ' ' || str[i] == '\0') {
 			if(!choice(func, s)) {
 				return false;
 			}
-			strcpy(func, "");
+			strcpy(func, "*");
 			k = 0;
 		} else {
 			func[k] = str[i];
@@ -207,12 +205,13 @@ int main() {
 	bool t = true;
 	func_arr = (char *)malloc(sizeof(char));
 	filename = (char *)malloc(sizeof(char));
-	cout << "Введите название файла для записи(в формате .csv): ";
+	cout << "Введите название файла для записи(без указания формата): ";
 	while ((c = cin.get())!= '\n') {
 		filename = (char *)realloc(filename, (strlen(filename)+1)*sizeof(char));
 		filename[k] = c;
 		k++;
 	}
+	strcat(filename, ".csv");
 	ofstream file(filename);
 	if ( !file ) {
 		cout << "Can not open file: \"" << filename <<"\"" << endl;
@@ -222,14 +221,14 @@ int main() {
 	cout << "Введите интервал построения графика\n";
 		cout << "от: ";
 		if (!(cin >> x1)) {
-			cout << "\nПожалуйста вводите только цифры.\n";
+			cout << "\nПожалуйста введите только цифры.\n";
 			cin.clear();
     		cin.ignore(100,'\n');
     		continue;
     	}
 		cout << "до: ";
 		if (!(cin >> x2)) {
-			cout << "\nПожалуйста вводите только цифры.\n";
+			cout << "\nПожалуйста введите только цифры.\n";
 			cin.clear();
     		cin.ignore(100,'\n');
     		continue;
@@ -241,11 +240,15 @@ int main() {
 		}
 		cout << "Введите точность построения: ";
 		if (!(cin >> e)) {
-			cout << "\nПожалуйста вводите только цифры.\n";
+			cout << "\nПожалуйста введите только цифры.\n";
 			cin.clear();
     		cin.ignore(100,'\n');
     		continue;
     	}
+    	if (e <= 0) {
+				cout << "\nПожалуйста введите точность больше нуля.\n\n";
+				continue;
+			}
     	cin.ignore(100,'\n');
     	break;
 	}
@@ -262,14 +265,17 @@ int main() {
 			stack s(x);
 			if(!function(func_arr, s)) {
 				t = true;
+				n = 0;
+				strcpy(func_arr, "*");
 				break;
 			} else {
+				if (i == x1/e) {
+					cout << "Вычисления стартовали, ожидайте\n";
+				}
 				t = false;
 				double y;
 				s.pop(y);
 				file << x << ";" << y << endl;
-				cout << "x=" << x << " y=" << y;
-				cout << endl;
 			}
 		}
 	}
@@ -277,4 +283,3 @@ int main() {
 	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	return 0;
 }
-c 
