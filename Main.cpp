@@ -182,7 +182,7 @@ void instruction() {
  	"|-------------------------------------------------------------------|\n"<<
  	"|  DUP   |        Копировать верхний объект стека(A->AA)            |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
- 	"|  MUL   |      Перемножить два врхних елемента стека(5 2->10)      |\n"<<
+ 	"|  MUL   |      Перемножить два верхних елемента стека(5 2->10)     |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
  	"|  SWAP  |   Поменять местами два верхних элемента стека (AB->BA)   |\n"<<
  	"|-------------------------------------------------------------------|\n"<<
@@ -211,7 +211,10 @@ int main() {
 		filename[k] = c;
 		k++;
 	}
+	filename = (char *)realloc(filename, (strlen(filename)+3)*sizeof(char));
+	cout << "----------------do ------- " << filename << endl;
 	strcat(filename, ".csv");
+	cout << "----------------posle ------- " << filename << endl;
 	ofstream file(filename);
 	if ( !file ) {
 		cout << "Can not open file: \"" << filename <<"\"" << endl;
@@ -221,14 +224,14 @@ int main() {
 	cout << "Введите интервал построения графика\n";
 		cout << "от: ";
 		if (!(cin >> x1)) {
-			cout << "\nПожалуйста введите только цифры.\n";
+			cout << "\nПожалуйста введите только цифры.\n\n";
 			cin.clear();
     		cin.ignore(100,'\n');
     		continue;
     	}
 		cout << "до: ";
 		if (!(cin >> x2)) {
-			cout << "\nПожалуйста введите только цифры.\n";
+			cout << "\nПожалуйста введите только цифры.\n\n";
 			cin.clear();
     		cin.ignore(100,'\n');
     		continue;
@@ -240,7 +243,7 @@ int main() {
 		}
 		cout << "Введите точность построения: ";
 		if (!(cin >> e)) {
-			cout << "\nПожалуйста введите только цифры.\n";
+			cout << "\nПожалуйста введите только цифры.\n\n";
 			cin.clear();
     		cin.ignore(100,'\n');
     		continue;
@@ -280,6 +283,8 @@ int main() {
 		}
 	}
 	file.close();
+	free(func_arr);
+	free(filename);
 	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	return 0;
 }
