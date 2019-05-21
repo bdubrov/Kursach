@@ -211,10 +211,8 @@ int main() {
 		filename[k] = c;
 		k++;
 	}
-	filename = (char *)realloc(filename, (strlen(filename)+3)*sizeof(char));
-	cout << "----------------do ------- " << filename << endl;
+	// filename = (char *)realloc(filename, (strlen(filename)+3)*sizeof(char));
 	strcat(filename, ".csv");
-	cout << "----------------posle ------- " << filename << endl;
 	ofstream file(filename);
 	if ( !file ) {
 		cout << "Can not open file: \"" << filename <<"\"" << endl;
@@ -283,8 +281,8 @@ int main() {
 		}
 	}
 	file.close();
+	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	free(func_arr);
 	free(filename);
-	ShellExecute(NULL, "open", "Excel.exe", filename , NULL, SW_SHOWMAXIMIZED);
 	return 0;
 }
